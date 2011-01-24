@@ -1,19 +1,22 @@
-// ******************************
-// Modeler LScript: Save with incremental backups
-// Version: 1.0
-// Author: Johan Steen
-// Date: 27 Jun 2008
-// Description: Backups the last saved version of the .lwo file into it's own
-//              backup directory with incrementions.
-//              And then saves the latest updates over the original .lwo file.
-//
-// http://www.artstorm.net
-// ******************************
+/*------------------------------------------------------------------------------
+ Modeler LScript: SaveIncBak
+ Version: 1.1
+ Author: Johan Steen
+ Author URI: http://www.artstorm.net/
+ Date: 29 Jun 2008
+ Description: Backups the last saved version of the .lwo file into it's own
+              backup directory with incrementions.
+              And then saves the latest updates over the original .lwo file.
+
+ Copyright (c) 2008, Johan Steen
+ All Rights Reserved.
+ Use is subject to license terms.
+------------------------------------------------------------------------------*/
 
 @version 2.4
 @warnings
 @script modeler
-@name "JS_SaveIncrementalBackups"
+@name "JS_SaveIncBak"
 
 // global values go here
 
@@ -36,9 +39,16 @@ main
         //return;
     }
 
-    objPath = split(objFile);               // Get the path to the current object
-    objPath = objPath[1] + objPath[2];
-    bakPath = objPath + objName + "_backup";    // Path where the backup files are stored
+    objPath = split(objFile);                               // Get the path splitted parts to the current object
+    if (objPath[1] == nil) {        // assume running on mac if no drive        
+        // If running on Mac    
+        objPath = objPath[2];                              // Path to object folder
+        bakPath = objPath + "\\" + objName + "_backup";    // Path where the backup files are stored   
+    } else {
+        // If running on Win    
+        objPath = objPath[1] + objPath[2];                 // Path to object folder
+        bakPath = objPath + objName + "_backup";           // Path where the backup files are stored   
+    }
 
     result = mkdir(bakPath);    // Returns 0 if folder was created
 
@@ -81,11 +91,15 @@ main
     bakFile = bakPath + "\\" + objName + "_v" + nextVersion + ".lwo";
 
     // Copy the old object file to the backup file
-    filecopy(objFile, bakFile);
+    filerename(objFile, bakFile);
 
     // Save the newest version to the object file
     save(objFile);
 }
+
+
+
+
 
 
 
